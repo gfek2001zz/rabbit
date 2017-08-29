@@ -37,6 +37,9 @@ class RequestContext(object):
         if self._wrapper is False:
             self._setup(name)
 
+        else:
+            setattr(self, name, None)
+
         return self.__dict__[name]
 
     def _loadSettings(self, settings_module):
@@ -96,8 +99,5 @@ def load_controller_route(controller_mods):
                     if re.match(r'\w+Action', action):
                         args = ('1')
                         getattr(controller_cls, action)(controller_cls, *args)
-    
-    if controller_cls is not None:
-        setattr(applicationContext, 'PATH_REGEX', controller_cls.path_regex)
 
     return True
