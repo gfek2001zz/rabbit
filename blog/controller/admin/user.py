@@ -10,4 +10,4 @@ class UserController:
     def indexAction(self, request, id):
         content = 'Hello World, id is %s' % id;
 
-        return JSONResponse(content);
+        return JSONResponse(content)
