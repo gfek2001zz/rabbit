@@ -24,8 +24,7 @@ class HttpReponse:
         if content_type is None:
             content_type = applicationContext.DEFAULT_CONTENT_TYPE
 
-        content_type = '%s; charset=%s' % (applicationContext.DEFAULT_CONTENT_TYPE,
-                                            self.charset)
+        content_type = '%s; charset=%s' % (content_type, self.charset)
 
         self['Content-Type'] = content_type
         self['Content-Length'] = str(len(content))
