@@ -53,9 +53,6 @@ class RequestContext(object):
                 setattr(self, setting, getattr(global_settings, setting))
 
         tuple_settings = (
-            "INSTALLED_APPS",
-            "TEMPLATE_DIRS",
-            "LOCALE_PATHS",
             "CONTROLLER_MODULE",
         )
 
@@ -97,7 +94,7 @@ def load_controller_route(controller_mods):
 
                 for action in dir(controller_cls):
                     if re.match(r'\w+Action', action):
-                        args = ('1')
+                        args = (applicationContext.ROUTE_SCANNING_MARK,)
                         getattr(controller_cls, action)(controller_cls, *args)
 
     return True

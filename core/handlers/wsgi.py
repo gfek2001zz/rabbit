@@ -4,26 +4,15 @@
 import importlib
 import re
 from core.context import applicationContext
-
-
-class WSGIRequest:
-    def __init__(self, environ):
-        return None
-
-    def GET(self):
-        return None
-
-    def POST(self):
-        return None
-
-    def FILES(self):
-        return None
-
-
+from core.http.request import HttpRequest
+from core.http.response import Response404
 
 class WSGIHandler(object):
-    
-
+    '''
+    WSGI协议处理器
+    在这里根据配置的路由
+    来映射到不同的控制器方法
+    '''
     def __call__(self, environ, start_repsonse):
         path = environ['PATH_INFO']
         
@@ -31,27 +20,25 @@ class WSGIHandler(object):
         for regex, cls_info in path_regex.items():
             match = re.match(regex, path)
             if match:
-                args = match.groups()
+                urlArgs = match.groups()
+                request = HttpRequest(environ)
+                args = (request,) + urlArgs
 
-                func = cls_info[1]
-                controller_cls = cls_info[0];
-                response_body = func(controller_cls, *args)
+                controller = cls_info[0]
+                action = cls_info[1]
+                response = action(controller, *args)
+                response_headers = list(response.items())
 
-                # HTTP response code and message
-                status = '200 OK'
-                
-                # 应答的头部是一个列表，每对键值都必须是一个 tuple。
-                response_headers = [('Content-Type', '' + getattr(controller_cls, 'content_type') + ';charset=utf-8'),
-                                    ('Content-Length', str(len(response_body)))]
-                
-                # 调用服务器程序提供的 start_response，填入两个参数
+                status = '%d %s' % (response.status_code, response.status_name)
                 start_repsonse(status, response_headers)
-                
-                return [response_body.encode('utf-8')]
-            
-            start_repsonse("404 NOT FOUND",[('Content-type', 'text/plain')])            
-            return ["page dose not exists".encode('utf-8')]
 
+                return [response.content.encode('utf-8')]
+            else:
+                response = Response404()
+                status = '%d %s' % (response.status_code, response.status_name)
+                response_headers = list(response.items())
+                start_repsonse(status, response_headers)
+                return [response.content.encode('utf-8')]
 
 class ControllerModuleException(Exception):
     pass

@@ -1,12 +1,13 @@
 #!/usr/bin/python
 
 from core.decorator.route import route
-from core.decorator.produces import produces
+from core.http.response import JSONResponse
 
 @route(path="/admin", isClass=True)
-@produces(value = "application/json")
 class UserController:
 
     @route(path="/index/(\d+)")
-    def indexAction(self, id):
-        return 'Hello World, id is %s' % id
+    def indexAction(self, request, id):
+        content = 'Hello World, id is %s' % id;
+
+        return JSONResponse(content);

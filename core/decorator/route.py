@@ -33,8 +33,11 @@ class Route(object):
                     if regex not in path_regex:
                         path_regex[regex] = (self, func)
                         setattr(applicationContext, 'PATH_REGEX', path_regex)
-                    
-                    func(*args)
+
+                    #判断固定传递的参数是否是路由扫描标记，如果是则不再执行控制器方法
+                    if args[1] != applicationContext.ROUTE_SCANNING_MARK:
+                        func(*args)
+                        
                 return __wrapper
             return _wrapper
         
